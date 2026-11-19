@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>心语 - AI 情感陪伴</title>
+  <meta name="description" content="心语 - 微信风格液态玻璃 AI 情感陪伴">
+  <link rel="stylesheet" href="css/style.css?v=20261105natural">
+</head>
+<body class="theme-warm-amber">
+  <div id="app" class="liquid-app-container view-state-home mobile-tab-chats">
+
+    <!-- ======================================================= -->
+    <!-- 网页端专属：左侧垂直导航 Dock 栏 (参考微信桌面端) -->
+    <!-- ======================================================= -->
+    <aside class="wechat-left-dock" id="wechat-left-dock">
+      <div class="dock-top-group">
+        <!-- 用户头像 -->
+        <div class="dock-avatar-btn" id="dock-user-avatar-btn" title="查看/编辑个人资料">
+          <span class="dock-avatar-face" id="dock-user-avatar">😊</span>
+          <span class="dock-online-badge"></span>
+        </div>
+
+        <!-- 消息对话 (激活状态) -->
+        <button class="dock-nav-btn active" id="dock-btn-chats" title="消息列表">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </button>
+
+        <!-- 今日状态 -->
+        <button class="dock-nav-btn" id="dock-btn-status" title="今日状态">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+        </button>
+      </div>
+
+      <div class="dock-bottom-group">
+        <!-- 系统设置 (桌面端齿轮按键) -->
+        <button class="dock-nav-btn" id="dock-btn-settings" title="通用与模型设置">
+          <svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ======================================================= -->
+    <!-- VIEW 1: 消息对话列表主界面 (参考微信/WhatsApp 对话页) -->
+    <!-- ======================================================= -->
+    <section class="wechat-home-pane" id="wechat-home-pane">
+      <!-- 聊天主页顶栏 -->
+      <header class="home-top-bar">
+        <div class="home-top-left">
+          <button type="button" class="user-avatar-pill" id="home-user-avatar-btn" title="设置此刻状态" aria-label="设置此刻状态">
+            <span class="user-avatar-face" id="home-user-avatar">😊</span>
+            <span class="user-online-badge"></span>
+          </button>
+          <div class="home-title-wrap">
+            <div class="home-title">消息</div>
+            <div class="home-subtitle" id="home-user-name">心友用户</div>
+          </div>
+        </div>
+
+        <div class="home-top-right">
+          <!-- 仅保留新建角色＋按钮 -->
+          <button class="icon-btn-minimal" id="btn-home-add-char" title="定制新角色 / 亲人声音">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- 微信同款搜索条 -->
+      <div class="home-search-container">
+        <div class="home-search-box">
+          <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="chat-search-input" placeholder="搜索对话或陪伴角色..." autocomplete="off">
+        </div>
+      </div>
+
+      <!-- 微信状态微入口 -->
+      <div class="home-status-card" id="home-status-card">
+        <div class="status-card-content">
+          <span class="status-card-icon" id="home-status-icon">🫧</span>
+          <div class="status-card-text">
+            <span class="status-card-label" id="home-status-title">今日状态</span>
+            <span class="status-card-desc" id="home-status-desc">点击设置此刻状态，角色会在10秒后主动关心你</span>
+          </div>
+        </div>
+        <span class="status-card-arrow">›</span>
+      </div>
+
+      <!-- 对话列表 (微信/WhatsApp 对话列表) -->
+      <div class="wechat-conversation-list" id="wechat-conversation-list">
+        <!-- 由 JS 动态渲染 -->
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- VIEW 1-B: 移动端专属 WhatsApp 风格「设置/自己」整页 (图二架构) -->
+    <!-- 彻底告别嵌套多层弹窗，原生分组列表排布 -->
+    <!-- ======================================================= -->
+    <section class="mobile-settings-pane" id="mobile-settings-pane">
+      <!-- 移动端设置顶栏 -->
+      <header class="mobile-settings-header">
+        <span class="mobile-settings-title">设置</span>
+        <button class="icon-btn-minimal" id="btn-close-settings" title="返回消息" aria-label="返回消息">×</button>
+      </header>
+
+      <div class="mobile-settings-scroll-body">
+        <!-- 头部个人名片 (参考图二 WhatsApp Profile 区域) -->
+        <div class="mobile-profile-hero" id="btn-mobile-edit-profile-hero">
+          <div class="mobile-profile-bubble">
+            <span id="mobile-hero-bio">愿温柔与你常伴 ✨</span>
+          </div>
+          <div class="mobile-hero-avatar-wrap">
+            <div class="mobile-hero-avatar" id="mobile-hero-avatar">😊</div>
+            <div class="mobile-hero-avatar-badge">＋</div>
+          </div>
+          <div class="mobile-hero-name" id="mobile-hero-name">心友用户</div>
+        </div>
+
+        <!-- 分组一：核心功能与智能 (WhatsApp Grouped Cards) -->
+        <div class="settings-group-card">
+          <div class="settings-row-item" id="row-open-api-config">
+            <div class="row-item-left">
+              <div class="row-icon-badge row-icon-cyan">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+              </div>
+              <span class="row-item-title">DeepSeek AI 大模型</span>
+            </div>
+            <div class="row-item-right">
+              <span class="row-item-badge" id="mobile-api-status-badge">未连接</span>
+              <span class="row-chevron">›</span>
+            </div>
+          </div>
+
+          <div class="settings-row-item" id="row-open-theme-config">
+            <div class="row-item-left">
+              <div class="row-icon-badge row-icon-purple">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 0 0 20v-20z"></path></svg>
+              </div>
+              <span class="row-item-title">聊天背景与视觉氛围</span>
+            </div>
+            <div class="row-item-right">
+              <span class="row-item-value" id="mobile-theme-label">焦糖琥珀</span>
+              <span class="row-chevron">›</span>
+            </div>
+          </div>
+
+          <div class="settings-row-item" id="row-switch-to-desktop">
+            <div class="row-item-left">
+              <div class="row-icon-badge row-icon-blue">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              </div>
+              <span class="row-item-title" id="view-mode-row-title">手机纵向预览</span>
+            </div>
+            <div class="row-item-right">
+              <span class="row-item-action-hint" id="view-mode-row-hint">切换预览</span>
+              <span class="row-chevron">›</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 分组二：个人陪伴与状态 -->
+        <div class="settings-group-card">
+          <div class="settings-row-item" id="row-open-status-hub">
+            <div class="row-item-left">
+              <div class="row-icon-badge row-icon-amber">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+              </div>
+              <span class="row-item-title">今日状态 (微动态)</span>
+            </div>
+            <div class="row-item-right">
+              <span class="row-item-value" id="mobile-status-value">未设置</span>
+              <span class="row-chevron">›</span>
+            </div>
+          </div>
+
+          <div class="settings-row-item" id="row-edit-profile">
+            <div class="row-item-left">
+              <div class="row-icon-badge row-icon-emerald">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              </div>
+              <span class="row-item-title">个人资料 (头像/昵称)</span>
+            </div>
+            <div class="row-item-right">
+              <span class="row-chevron">›</span>
+            </div>
+          </div>
+
+          <div class="settings-row-item" id="row-about-app">
+            <div class="row-item-left">
+              <div class="row-icon-badge row-icon-gray">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              </div>
+              <span class="row-item-title">关于心语</span>
+            </div>
+            <div class="row-item-right">
+              <span class="row-item-value">v2.0 液态玻璃</span>
+              <span class="row-chevron">›</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- 移动端专属：底部导航 Dock 栏 (参考图二 WhatsApp 原生标签底栏) -->
+    <!-- [消息] [设置/自己]；状态从主页头像进入 -->
+    <!-- ======================================================= -->
+    <footer class="wechat-mobile-bottom-bar" id="wechat-mobile-bottom-bar">
+      <!-- 标签 1：消息 (带未读提示) -->
+      <button class="mobile-tab-btn active" id="tab-nav-chats" title="聊天">
+        <div class="tab-icon-wrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          <span class="tab-unread-dot" id="tab-chat-unread-dot" style="display:none;"></span>
+        </div>
+        <span>聊天</span>
+      </button>
+
+      <!-- 标签 2：设置（与网页端共用齿轮图形） -->
+      <button class="mobile-tab-btn" id="tab-nav-settings" title="设置与自己">
+        <div class="tab-icon-wrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </div>
+        <span>设置</span>
+      </button>
+    </footer>
+
+    <!-- ======================================================= -->
+    <!-- VIEW 2: 单聊对话界面 (参考微信聊天详情页) -->
+    <!-- ======================================================= -->
+    <main class="wechat-chat-pane" id="wechat-chat-pane">
+
+      <!-- 对话顶栏 -->
+      <header class="liquid-top-bar">
+        <div class="top-bar-left">
+          <!-- 返回主页按钮 (点击进入后再返回一次回到聊天主页) -->
+          <button class="btn-wechat-back" id="btn-back-to-home" title="返回聊天主页">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            <span class="back-text">消息</span>
+          </button>
+        </div>
+
+        <div class="top-bar-center">
+          <div class="character-name-display" id="chat-char-name">小暖</div>
+          <button type="button" class="learning-link learning-badge" id="style-learning-badge" hidden>已启用学习口吻</button>
+          <div class="capsule-mode-toggle" id="mode-toggle">
+            <button class="mode-pill-btn" data-mode="video">VIDEO</button>
+            <button class="mode-pill-btn active" data-mode="voice">VOICE</button>
+          </div>
+        </div>
+
+        <div class="top-bar-right">
+          <button class="top-api-badge" id="btn-open-api-modal" title="DeepSeek AI 设置">
+            <span class="api-status-dot" id="api-status-dot"></span>
+            <span id="api-status-label">DeepSeek</span>
+          </button>
+          <!-- 对话角色右上角设置按键 (微信同款 ··· 按钮：自定义Prompt人格与专属聊天背景) -->
+          <button class="icon-btn-minimal" id="btn-char-detail-settings" title="角色人设(Prompt)与聊天背景设置">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle><circle cx="5" cy="12" r="1.5"></circle></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- 消息流容器 (聊天会话内容区) -->
+      <div class="liquid-chat-messages" id="chat-messages">
+        <!-- 由 JS 渲染消息 -->
+      </div>
+
+      <!-- 沉淀记忆胶囊 -->
+      <div class="memory-action-wrapper">
+        <button class="btn-update-memory-pill" id="btn-update-memory" title="将当前对话中的情感细节永久记在TA的心里">
+          UPDATE MEMORY
+        </button>
+      </div>
+
+      <!-- 悬浮液态玻璃输入栏 -->
+      <div class="liquid-input-dock-container">
+        <div class="liquid-input-dock" id="chat-input-bar">
+          <input type="text" id="chat-input" placeholder="输入你想说的话..." autocomplete="off">
+          <div class="dock-actions">
+            <button class="dock-btn" id="btn-voice-toggle" title="语音模式">
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+            </button>
+            <button class="dock-btn-send" id="btn-send" title="发送消息">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ======================================================= -->
+    <!-- MODALS / SHEETS (轻量唤起，拒绝多层嵌套弹窗) -->
+    <!-- ======================================================= -->
+
+    <!-- 1. DeepSeek API 配置 Modal / Sheet -->
+    <div class="modal-overlay" id="modal-api-config">
+      <div class="liquid-modal" style="max-width: 480px;">
+        <div class="modal-handle"></div>
+        <div class="modal-title">DeepSeek AI 大模型连接</div>
+        <p class="modal-subtitle">填入你的 API Key 唤醒全量实时流式 AI 陪伴交流。</p>
+
+        <div class="form-group">
+          <label class="form-label">DeepSeek API Key</label>
+          <div class="input-with-action">
+            <input type="password" class="liquid-input" id="input-api-key" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+            <button type="button" id="btn-toggle-key-vis" class="input-eye-btn" title="切换显示/隐藏">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+          <span class="form-hint">获取地址：<a href="https://platform.deepseek.com" target="_blank" rel="noopener noreferrer">DeepSeek 开放平台</a></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">模型选择</label>
+          <select class="liquid-select" id="select-api-model">
+            <option value="deepseek-chat">deepseek-chat (V3 通用模型 · 极速高情商)</option>
+            <option value="deepseek-reasoner">deepseek-reasoner (R1 深度思考推理)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">API 接口端点 (Base URL)</label>
+          <input type="text" class="liquid-input" id="input-api-base-url" value="https://api.deepseek.com">
+        </div>
+
+        <div class="modal-btn-row">
+          <button class="liquid-btn-secondary" id="btn-test-api">测试连接</button>
+          <button class="liquid-btn-primary" id="btn-save-api">保存设置</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 全局聊天框背景与氛围 Modal / Sheet -->
+    <div class="modal-overlay" id="modal-chat-theme">
+      <div class="liquid-modal" style="max-width: 480px;">
+        <div class="modal-handle"></div>
+        <div class="modal-title">聊天背景与视觉氛围</div>
+        <p class="modal-subtitle">日间／夜间模式改变整个应用的明暗风格，保留当前聊天背景图片。</p>
+
+        <div class="form-group">
+          <label class="form-label" id="color-mode-label">应用外观</label>
+          <div class="view-mode-pill-group" role="group" aria-labelledby="color-mode-label">
+            <button type="button" class="view-mode-pill-btn" data-color-mode="light" aria-pressed="false">☀ 日间模式</button>
+            <button type="button" class="view-mode-pill-btn" data-color-mode="dark" aria-pressed="true">☾ 夜间模式</button>
+          </div>
+        </div>
+        <label class="form-label">聊天背景氛围</label>
+        
+        <div class="chat-bg-grid" id="chat-bg-grid">
+          <div class="bg-option selected" data-theme="warm-amber">
+            <div class="bg-preview theme-warm-amber-preview"></div>
+            <span>焦糖琥珀</span>
+          </div>
+          <div class="bg-option" data-theme="obsidian">
+            <div class="bg-preview theme-obsidian-preview"></div>
+            <span>深空极夜</span>
+          </div>
+          <div class="bg-option" data-theme="violet">
+            <div class="bg-preview theme-violet-preview"></div>
+            <span>微醺紫雾</span>
+          </div>
+          <div class="bg-option" data-theme="forest">
+            <div class="bg-preview theme-forest-preview"></div>
+            <span>静谧墨绿</span>
+          </div>
+        </div>
+
+        <!-- 自定义相片背景上传 -->
+        <div class="custom-bg-upload-section">
+          <label class="form-label" style="margin-top:16px;">自定义聊天相片背景</label>
+          <input type="file" id="input-custom-bg" accept="image/*" style="display:none;">
+          <button type="button" class="liquid-btn-secondary btn-full" id="btn-trigger-upload-bg" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            <span id="upload-bg-btn-text">上传本地照片做全局聊天背景</span>
+          </button>
+          <div id="custom-bg-info-row" style="display:none;margin-top:10px;align-items:center;justify-content:space-between;">
+            <span style="font-size:0.75rem;color:var(--text-muted);">已启用自定义照片背景</span>
+            <button type="button" id="btn-clear-custom-bg" style="background:none;border:none;color:#f87171;font-size:0.75rem;cursor:pointer;">清除照片并恢复</button>
+          </div>
+        </div>
+
+        <div class="modal-btn-row" style="margin-top:20px;">
+          <button class="liquid-btn-primary btn-full" id="btn-close-bg-modal">完成</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 角色人设与对话设置 Modal (右上角点击进入：编辑人设Prompt + 专属聊天背景) -->
+    <div class="modal-overlay" id="modal-character-settings">
+      <div class="liquid-modal" style="max-width: 520px;">
+        <div class="modal-handle"></div>
+        <div class="modal-title" id="char-modal-title">角色人设与聊天设置</div>
+        <p class="modal-subtitle">自定义当前角色的性格 Prompt 人格，并为 TA 设置专属聊天背景。</p>
+
+        <!-- 角色基础识别 -->
+        <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;">
+          <span id="char-modal-avatar-preview" style="font-size:2rem;width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:var(--glass-tint);border:1px solid var(--glass-border);border-radius:var(--radius-md);">🌸</span>
+          <div style="flex:1;">
+            <input type="text" class="liquid-input" id="char-modal-name-input" placeholder="角色名称" style="margin-bottom:6px;font-weight:600;">
+            <input type="text" class="liquid-input" id="char-modal-role-input" placeholder="角色定位标签 (如：温暖姐姐)">
+          </div>
+        </div>
+
+        <!-- 人设 Prompt 详细编辑框 -->
+        <div class="form-group">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <label class="form-label" style="margin-bottom:0;">角色人格与对话指令 (System Prompt)</label>
+            <button type="button" id="btn-reset-char-prompt" style="background:none;border:none;color:var(--accent-cyan);font-size:0.72rem;cursor:pointer;">恢复默认人设</button>
+          </div>
+          <textarea class="liquid-input" id="char-modal-prompt-input" rows="7" placeholder="在此设定 TA 的人设背景、性格特点、说话语气、对你的专属称呼及交流准则..." style="font-size:0.84rem;line-height:1.55;resize:vertical;min-height:140px;"></textarea>
+          <span class="form-hint">大模型将在每次回复时严格遵循上方的人设指令与你对话。</span>
+        </div>
+
+        <section class="form-group learning-entry">
+          <div class="form-label">学习 TA 的说话方式</div>
+          <p class="form-hint" id="style-learning-summary"></p>
+          <button type="button" class="liquid-btn-secondary btn-full" id="btn-style-learning">导入聊天记录</button>
+        </section>
+
+        <!-- 专属聊天背景相片 -->
+        <div class="form-group" style="margin-top:16px;">
+          <label class="form-label">当前角色专属聊天背景</label>
+          <div style="display:flex;gap:8px;">
+            <button type="button" class="liquid-btn-secondary" id="btn-char-upload-bg" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              <span id="char-upload-bg-text">上传 TA 的专属聊天相片</span>
+            </button>
+            <button type="button" class="liquid-btn-secondary" id="btn-char-clear-bg" style="display:none;color:#f87171;padding:0 14px;" title="清除此角色的专属相片并使用全局背景">清除专属</button>
+          </div>
+          <input type="file" id="input-char-custom-bg" accept="image/*" style="display:none;">
+          <span class="form-hint" id="char-bg-hint">可为每个陪伴角色单独绑定一张专属对话壁纸。</span>
+        </div>
+
+        <div class="modal-btn-row" style="margin-top:20px;">
+          <button class="liquid-btn-secondary" id="btn-cancel-char-settings">取消</button>
+          <button class="liquid-btn-primary" id="btn-save-char-settings">保存人设与背景</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. 今日状态 Modal -->
+    <div class="modal-overlay" id="modal-status-hub">
+      <div class="liquid-modal">
+        <div class="modal-handle"></div>
+        <div class="modal-title">设置此刻状态</div>
+        <p class="modal-subtitle">像微信状态一样，设置后陪伴角色会在 10 秒后主动来关心你。</p>
+
+        <!-- 当前状态展示 -->
+        <div class="my-status-box" id="my-status-card-inner">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- 状态选择九宫格 -->
+        <div class="status-grid-compact" id="status-grid-compact">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="modal-btn-row" style="margin-top:16px;">
+          <button class="liquid-btn-secondary btn-full" id="btn-close-status-modal">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. 发布具体状态 Modal -->
+    <div class="modal-overlay" id="modal-publish-status">
+      <div class="liquid-modal">
+        <div class="modal-handle"></div>
+        <div class="modal-title">发布状态</div>
+        <div class="status-preview-pill" id="publish-status-preview">
+          <span class="preview-emoji" id="publish-status-emoji">🎧</span>
+          <span class="preview-name" id="publish-status-name">听歌</span>
+        </div>
+        <div class="form-group" style="margin-top:16px;">
+          <label class="form-label">此刻想说的话（选填）</label>
+          <textarea class="liquid-input" id="input-status-desc" placeholder="写下此刻的所思所想..." style="height:76px;resize:none;"></textarea>
+        </div>
+        <div class="modal-btn-row">
+          <button class="liquid-btn-secondary" id="btn-cancel-publish-status">取消</button>
+          <button class="liquid-btn-primary" id="btn-confirm-publish-status">确认发布</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. 个人资料编辑 Modal -->
+    <div class="modal-overlay" id="modal-edit-profile">
+      <div class="liquid-modal">
+        <div class="modal-handle"></div>
+        <div class="modal-title">修改个人资料</div>
+        <div class="form-group">
+          <label class="form-label">选择头像</label>
+          <div class="avatar-select-grid" id="avatar-select-grid">
+            <button class="avatar-option selected" data-avatar="😊">😊</button>
+            <button class="avatar-option" data-avatar="🦊">🦊</button>
+            <button class="avatar-option" data-avatar="🐱">🐱</button>
+            <button class="avatar-option" data-avatar="🐼">🐼</button>
+            <button class="avatar-option" data-avatar="🌸">🌸</button>
+            <button class="avatar-option" data-avatar="⭐">⭐</button>
+            <button class="avatar-option" data-avatar="☕">☕</button>
+            <button class="avatar-option" data-avatar="🌿">🌿</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">昵称</label>
+          <input type="text" class="liquid-input" id="input-edit-nickname" value="心友用户" maxlength="16">
+        </div>
+        <div class="form-group">
+          <label class="form-label">个性签名</label>
+          <input type="text" class="liquid-input" id="input-edit-bio" value="愿温柔与你常伴" maxlength="30">
+        </div>
+        <div class="modal-btn-row">
+          <button class="liquid-btn-secondary" id="btn-cancel-edit-profile">取消</button>
+          <button class="liquid-btn-primary" id="btn-save-edit-profile">保存修改</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. 创建角色 Modal -->
+    <div class="modal-overlay" id="modal-create-character">
+      <div class="liquid-modal">
+        <div class="modal-handle"></div>
+        <div class="modal-title">创建陪伴新角色</div>
+        <div class="form-group">
+          <label class="form-label">角色头像 (Emoji 或文字)</label>
+          <input type="text" class="liquid-input" id="new-char-emoji" value="🐱" style="text-align:center;font-size:1.4rem;" maxlength="2">
+        </div>
+        <div class="form-group">
+          <label class="form-label">角色名称</label>
+          <input type="text" class="liquid-input" id="new-char-name" placeholder="例如：爸、知心姐姐、阿哲">
+        </div>
+        <div class="form-group">
+          <label class="form-label">角色定位</label>
+          <input type="text" class="liquid-input" id="new-char-role" placeholder="例如：父亲、闺蜜、毒舌好友">
+        </div>
+        <div class="form-group">
+          <label class="form-label">性格风格</label>
+          <select class="liquid-select" id="new-char-style">
+            <option value="warm">温暖体贴 (包容共情)</option>
+            <option value="rational">理性客观 (分析建议)</option>
+            <option value="humorous">幽默开朗 (逗乐解压)</option>
+            <option value="quiet">安静倾听 (纯粹树洞)</option>
+          </select>
+        </div>
+        <div class="modal-btn-row">
+          <button class="liquid-btn-secondary" id="btn-cancel-create">取消</button>
+          <button class="liquid-btn-primary" id="btn-confirm-create">创建角色</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="liquid-toast"></div>
+
+  </div>
+
+  <script src="vendor/pdf.worker.js"></script>
+  <script src="vendor/pdf.js"></script>
+  <script src="vendor/sql-asm.js"></script>
+  <script src="js/record-import.js?v=20261105"></script>
+  <script src="js/style-learning.js?v=20261119reply"></script>
+  <script src="js/style-learning-ui.js?v=20261112batch"></script>
+  <script src="js/app.js?v=20261119reply"></script>
+</body>
+</html>
